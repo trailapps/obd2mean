@@ -26,16 +26,17 @@ router.get('/tasks', function (req, res, next) {
     let body = { size: 2000, from: 0, query: { match_all: {} }};
 
     console.log(`retrieving all documents (displaying ${body.size} at a time)...`);
-    search('logstash-vehicledata', body)
-        .then(results => {
+    search('logstash-temp', body)
+        .then(results =>/*  {
             console.log(`found ${results.hits.total} items in ${results.took}ms`);
             console.log(`returned article titles:`);
             results.hits.hits.forEach((hit, index) => {
-            console.log(`\t${body.from + ++index} - ${hit._source.title}`)
-            res.json(results);
-            }
-        );
-        })
+            console.log(`\t${body.from + ++index} - ${hit._source.vehicleid}`)
+            }); */
+           res.send(results)
+        // console.log(JSON.stringify(results.hits.hits)) ;
+    //    }
+    )
         .catch(console.error);
 
 
@@ -44,24 +45,21 @@ router.get('/tasks', function (req, res, next) {
 //Save Task
 router.post('/task', function (req, res, next) {
     var obddata = req.body;
-    bulkIndex('logstash-vehicledata', 'obd2', obddata);
+    console.log('data post req'+ JSON.stringify(obddata));
+    bulkIndex('logstash-temp', 'obd2', obddata);
 });
 
 const bulkIndex = function bulkIndex(index, type, data) {
     let bulkBody = [];
-
-    data.forEach(item => {
-        bulkBody.push({
+     bulkBody.push({
             index: {
                 _index: index,
                 _type: type,
-                _id: item.id
+                _id: data.vehicleid
             }
         });
-
-        bulkBody.push(item);
-    });
-
+        bulkBody.push(data);
+  
     esClient.bulk({ body: bulkBody })
         .then(response => {
             let errorCount = 0;
@@ -74,7 +72,4 @@ const bulkIndex = function bulkIndex(index, type, data) {
         })
         .catch(console.err);
 };
-
-
-
 module.exports = router;

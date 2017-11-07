@@ -1,4 +1,9 @@
 export class Task{
     title: string;
-    isDone: boolean;
+    readings: string[];
+    vehicleid: string;
+    altitude: string;
+    latitude:string;
+    longitude:string;
+    timestamp: string
 }

@@ -1,5 +1,5 @@
 {
-  "name": "obd reader",
+  "name": "obdreader",
   "version": "1.0.0",
   "description": "obd2 reader and analytics",
   "main": "server.js",
